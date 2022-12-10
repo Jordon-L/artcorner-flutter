@@ -32,15 +32,26 @@ class _GalleryState extends State<Gallery> {
             padding: const EdgeInsets.all(0),
             crossAxisSpacing: 0,
             mainAxisSpacing: 0,
-            crossAxisCount: 2,
+            crossAxisCount: MediaQuery.of(context).size.width > 700 ? 4 : 2,
             children: [
               for (final post in posts)
                 GestureDetector(
-                  onTap:(){
-                     Navigator.push<void>(context, MaterialPageRoute<void>(builder:(BuildContext context) => Post(post: post),
-                     ));
+                  onTap: () {
+                    Navigator.push<void>(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => Post(post: post),
+                        ));
                   },
-                  child: Image.network(post.thumbnailUrl!, height: 200),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: NetworkImage(post.thumbnailUrl!,
+                            ),
+                      ),
+                    ),
+                  ),
                 )
             ],
           );

@@ -1,3 +1,4 @@
+import 'package:artcorner/author_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:artcorner/dto.dart';
@@ -29,16 +30,27 @@ class _PostState extends State<Post> {
                     CircleAvatar(
                       backgroundColor: Colors.transparent,
                       radius: 30,
-                      backgroundImage: author.avatarUrl != null
-                          ? NetworkImage(author.avatarUrl)
+                      backgroundImage: author.avatar != null
+                          ? NetworkImage(author.avatar)
                           : const AssetImage('images/account.png')
                               as ImageProvider,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
-                      child: Text(
-                        author.name,
-                        style: const TextStyle(fontSize: 16),
+                      child: GestureDetector(
+                        onTap: (() {
+                          Navigator.push<void>(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    AuthorPage(author: author.id),
+                              ));
+                        }),
+                        child: Text(author.name != "" ? author.name: "no name",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              decoration: TextDecoration.underline,
+                            )),
                       ),
                     ),
                   ],

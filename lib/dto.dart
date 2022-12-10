@@ -29,7 +29,7 @@ class ProfileDto {
 
   late final Map<String, dynamic> _data = _record.data;
 
-  // late final String id = _data['id'];
+  late final String id = _record.id;
 
   late final String name = _data['name'];
 
@@ -37,5 +37,5 @@ class ProfileDto {
 
 
 
-  late final String? avatarUrl = _record.resolveFileUrl('avatar', true);
+  late final String? avatar = _record.resolveFileUrl('avatar', true);
 }

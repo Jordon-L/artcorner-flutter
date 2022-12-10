@@ -1,20 +1,21 @@
-import 'package:artcorner/create_account_page.dart';
-import 'package:artcorner/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:artcorner/db.dart';
+import 'package:artcorner/profile_page.dart';
 
 import 'main.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class CreatePage extends StatefulWidget {
+  const CreatePage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<CreatePage> createState() => _CreatePageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _CreatePageState extends State<CreatePage> {
   TextEditingController nameController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   bool successLogin = false;
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Log In"),
+        title: const Text("Create Account"),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -56,6 +57,16 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Container(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: userNameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'User name',
+                ),
+              ),
+            ),
+            Container(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: TextField(
                 obscureText: true,
@@ -66,42 +77,73 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            TextButton(
-              onPressed: () {
-                //forgot password screen
-              },
-              child: const Text(
-                'Forgot Password?',
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              child: TextField(
+                obscureText: true,
+                controller: confirmPasswordController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Confirm Password',
+                ),
               ),
+            ),
+            const SizedBox(
+              height: 40,
             ),
             Container(
               height: 50,
               width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: ElevatedButton(
-                child: const Text('Log in'),
+                child: const Text('Submit'),
                 onPressed: () async {
                   try {
+                    final body = <String, dynamic>{
+                      "name": userNameController.text,
+                      "email": nameController.text,
+                      "emailVisibility": false,
+                      "password": passwordController.text,
+                      "passwordConfirm": confirmPasswordController.text,
+                    };
+                    await pb.collection('users').create(body: body);
+
                     await pb.collection('users').authWithPassword(
                         nameController.text, passwordController.text);
                     setState(() {
                       loggedIn = true;
                       successLogin = true;
                     });
+
                     if (mounted) {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  const RootPage()),
-                          (Route<dynamic> route) => false);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Account Created'),
+                          content: const Text('Account successfully created'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            const RootPage()),
+                                    (Route<dynamic> route) => false)
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
                     }
                   } catch (e) {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
                         title: const Text('An Error has occurred'),
-                        content: const Text('Email and password is incorrect'),
+                        content: const Text(
+                            'Invalid email or passwords not matching'),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.pop(context, 'OK'),
@@ -113,24 +155,6 @@ class _LoginPageState extends State<LoginPage> {
                   }
                 },
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text('Do not have account?'),
-                TextButton(
-                  child: const Text(
-                    'Create Account',
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CreatePage()),
-                    );
-                  },
-                ),
-              ],
             ),
           ],
         ),

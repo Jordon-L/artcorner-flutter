@@ -1,36 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:artcorner/login_page.dart';
 import 'package:artcorner/db.dart';
 import 'package:artcorner/dto.dart';
 import 'package:artcorner/post.dart';
 
 const int itemCount = 20;
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class AuthorPage extends StatefulWidget {
+  const AuthorPage({super.key, required this.author});
+  final String author;
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<AuthorPage> createState() => _AuthorPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _AuthorPageState extends State<AuthorPage> {
+  
   @override
+
   Widget build(BuildContext context) {
-    if (!loggedIn) {
-      return Center(
-        child: ElevatedButton(
-          child: const Text('Login'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
-            );
-          },
-        ),
-      );
-    }
-    final author = DB.getProfile();
-    final results = DB.getAuthorPost(page: 1, authorId: author.id);
+    final results = DB.getAuthorPost(page: 1, authorId: widget.author);
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Author'),
+      ),
       body: FutureBuilder(
         future: results,
         builder: (context, snapshot) {
@@ -42,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           final posts =
               snapshot.data!.items.map((it) => PostDto.fromRecord(it));
+          ProfileDto author = posts.first.author;
           return Column(
             children: [
               Container(
